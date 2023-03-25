@@ -59,6 +59,83 @@ const addBookHandler = (request, h) => {
 };
 
 const getAllBooksHandler = (request, h) => {
+  const { name, reading, finished } = request.query;
+
+  if (name) {
+    const allBooksUsingQuery = bookshelf.filter(
+      (book) => book.name.toLowerCase().includes(name.toLowerCase()),
+    );
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: allBooksUsingQuery.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+    return response;
+  }
+
+  if (reading) {
+    if (reading === '0') {
+      const allBooksReading = bookshelf.filter(
+        (book) => book.reading === Boolean(reading),
+      );
+      const response = h.response({
+        status: 'success',
+        data: {
+          books: allBooksReading.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      });
+      response.code(200);
+      return response;
+    }
+
+    if (reading === '1') {
+      const allBooksReading = bookshelf.filter(
+        (book) => book.reading === Boolean(reading),
+      );
+      const response = h.response({
+        status: 'success',
+        data: {
+          books: allBooksReading.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      });
+      response.code(200);
+      return response;
+    }
+  }
+
+  if (finished) {
+    const allBooksFinished = bookshelf.filter(
+      (book) => book.finished === Boolean(finished),
+    );
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: allBooksFinished.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+    return response;
+  }
+
   const allBooks = bookshelf.map((book) => ({
     id: book.id,
     name: book.name,
