@@ -60,12 +60,13 @@ const addBookHandler = (request, h) => {
 
 const getAllBooksHandler = (request, h) => {
   const { name, reading, finished } = request.query;
+  const readingBook = (reading === '1');
+  const finishedBook = (finished === '1');
 
   if (name) {
     const allBooksUsingQuery = bookshelf.filter(
       (book) => book.name.toLowerCase().includes(name.toLowerCase()),
     );
-
     const response = h.response({
       status: 'success',
       data: {
@@ -81,9 +82,9 @@ const getAllBooksHandler = (request, h) => {
   }
 
   if (reading) {
-    if (reading === '0') {
+    if (readingBook) {
       const allBooksReading = bookshelf.filter(
-        (book) => book.reading === Boolean(reading),
+        (book) => book.reading === true,
       );
       const response = h.response({
         status: 'success',
@@ -99,9 +100,9 @@ const getAllBooksHandler = (request, h) => {
       return response;
     }
 
-    if (reading === '1') {
+    if (readingBook === false) {
       const allBooksReading = bookshelf.filter(
-        (book) => book.reading === Boolean(reading),
+        (book) => book.reading === false,
       );
       const response = h.response({
         status: 'success',
@@ -119,21 +120,41 @@ const getAllBooksHandler = (request, h) => {
   }
 
   if (finished) {
-    const allBooksFinished = bookshelf.filter(
-      (book) => book.finished === Boolean(finished),
-    );
-    const response = h.response({
-      status: 'success',
-      data: {
-        books: allBooksFinished.map((book) => ({
-          id: book.id,
-          name: book.name,
-          publisher: book.publisher,
-        })),
-      },
-    });
-    response.code(200);
-    return response;
+    if (finishedBook) {
+      const allBooksFinished = bookshelf.filter(
+        (book) => book.finished === true,
+      );
+      const response = h.response({
+        status: 'success',
+        data: {
+          books: allBooksFinished.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      });
+      response.code(200);
+      return response;
+    }
+
+    if (finishedBook === false) {
+      const allBooksFinished = bookshelf.filter(
+        (book) => book.finished === false,
+      );
+      const response = h.response({
+        status: 'success',
+        data: {
+          books: allBooksFinished.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      });
+      response.code(200);
+      return response;
+    }
   }
 
   const allBooks = bookshelf.map((book) => ({
@@ -178,7 +199,6 @@ const getBookByIdHandler = (request, h) => {
 
 const editBookByIdHandler = (request, h) => {
   const { bookId } = request.params;
-
   const {
     name, year, author, summary, publisher, pageCount, readPage, reading,
   } = request.payload;
