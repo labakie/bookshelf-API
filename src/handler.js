@@ -59,6 +59,104 @@ const addBookHandler = (request, h) => {
 };
 
 const getAllBooksHandler = (request, h) => {
+  const { name, reading, finished } = request.query;
+  const readingBook = (reading === '1');
+  const finishedBook = (finished === '1');
+
+  if (name) {
+    const allBooksUsingQuery = bookshelf.filter(
+      (book) => book.name.toLowerCase().includes(name.toLowerCase()),
+    );
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: allBooksUsingQuery.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+    return response;
+  }
+
+  if (reading) {
+    if (readingBook) {
+      const allBooksReading = bookshelf.filter(
+        (book) => book.reading === true,
+      );
+      const response = h.response({
+        status: 'success',
+        data: {
+          books: allBooksReading.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      });
+      response.code(200);
+      return response;
+    }
+
+    if (readingBook === false) {
+      const allBooksReading = bookshelf.filter(
+        (book) => book.reading === false,
+      );
+      const response = h.response({
+        status: 'success',
+        data: {
+          books: allBooksReading.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      });
+      response.code(200);
+      return response;
+    }
+  }
+
+  if (finished) {
+    if (finishedBook) {
+      const allBooksFinished = bookshelf.filter(
+        (book) => book.finished === true,
+      );
+      const response = h.response({
+        status: 'success',
+        data: {
+          books: allBooksFinished.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      });
+      response.code(200);
+      return response;
+    }
+
+    if (finishedBook === false) {
+      const allBooksFinished = bookshelf.filter(
+        (book) => book.finished === false,
+      );
+      const response = h.response({
+        status: 'success',
+        data: {
+          books: allBooksFinished.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      });
+      response.code(200);
+      return response;
+    }
+  }
+
   const allBooks = bookshelf.map((book) => ({
     id: book.id,
     name: book.name,
@@ -101,7 +199,6 @@ const getBookByIdHandler = (request, h) => {
 
 const editBookByIdHandler = (request, h) => {
   const { bookId } = request.params;
-
   const {
     name, year, author, summary, publisher, pageCount, readPage, reading,
   } = request.payload;
